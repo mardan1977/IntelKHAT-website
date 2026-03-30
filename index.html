@@ -1,110 +1,771 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>INTELKHAT</title>
-<script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
-<script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>IntelKHAT</title>
 
-<style>
-body {
-  font-family: Arial;
-  background: #f4f6f9;
-  text-align: center;
-  padding: 40px;
-}
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
-.card {
-  background: white;
-  max-width: 500px;
-  margin: auto;
-  padding: 30px;
-  border-radius: 20px;
-  box-shadow: 0 8px 20px rgba(0,0,0,0.1);
-}
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
 
-button {
-  padding: 12px 20px;
-  border: none;
-  border-radius: 10px;
-  background: #007bff;
-  color: white;
-  cursor: pointer;
-}
+    html {
+      scroll-behavior: smooth;
+    }
 
-img {
-  margin-top: 20px;
-  max-width: 100%;
-  border-radius: 12px;
-}
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #f5f5f5;
+      color: #111111;
+      overflow-x: hidden;
+    }
 
-.result {
-  margin-top: 20px;
-  padding: 15px;
-  background: #eaf4ff;
-  border-radius: 12px;
-}
-</style>
+    .navbar {
+      width: 100%;
+      background: rgba(255,255,255,0.92);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid #dddddd;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 18px 40px;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      animation: slideDown 0.7s ease;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .logo-box {
+      width: 52px;
+      height: 52px;
+      border-radius: 14px;
+      background: #111111;
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      font-weight: 800;
+      transition: transform 0.3s ease;
+    }
+
+    .logo-box:hover {
+      transform: rotate(-6deg) scale(1.05);
+    }
+
+    .brand-text h2 {
+      font-size: 28px;
+      font-weight: 800;
+      line-height: 1;
+    }
+
+    .brand-text p {
+      font-size: 13px;
+      color: #666666;
+      margin-top: 4px;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 22px;
+      align-items: center;
+      font-weight: 600;
+      color: #444444;
+      flex-wrap: wrap;
+    }
+
+    .nav-links a,
+    .dropdown-toggle {
+      text-decoration: none;
+      color: #444444;
+      background: none;
+      border: none;
+      font: inherit;
+      cursor: pointer;
+      transition: color 0.25s ease, transform 0.25s ease;
+    }
+
+    .nav-links a:hover,
+    .dropdown-toggle:hover {
+      color: #111111;
+      transform: translateY(-1px);
+    }
+
+    .dropdown {
+      position: relative;
+    }
+
+    .dropdown-menu {
+      position: absolute;
+      top: 42px;
+      left: 0;
+      width: 360px;
+      max-height: 430px;
+      overflow-y: auto;
+      background: #ffffff;
+      border: 1px solid #dcdcdc;
+      border-radius: 18px;
+      box-shadow: 0 14px 34px rgba(0,0,0,0.10);
+      padding: 16px;
+      display: none;
+      text-align: left;
+      z-index: 1200;
+      animation: fadeUp 0.25s ease;
+    }
+
+    .dropdown.active .dropdown-menu {
+      display: block;
+    }
+
+    .dropdown-section {
+      margin-bottom: 14px;
+    }
+
+    .dropdown-section:last-child {
+      margin-bottom: 0;
+    }
+
+    .dropdown-title {
+      font-size: 13px;
+      font-weight: 800;
+      color: #111111;
+      margin-bottom: 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .dropdown-items {
+      font-size: 14px;
+      color: #555555;
+      line-height: 1.7;
+    }
+
+    .nav-btn {
+      background: #111111;
+      color: white;
+      border: none;
+      padding: 14px 22px;
+      border-radius: 12px;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.25s ease;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+    }
+
+    .nav-btn:hover {
+      transform: translateY(-2px);
+      background: #2b2b2b;
+    }
+
+    .hero-banner {
+      width: 100%;
+      height: 430px;
+      overflow: hidden;
+      animation: fadeIn 1s ease;
+      border-bottom: 1px solid #dddddd;
+      background: #eaeaea;
+    }
+
+    .hero-banner img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      filter: grayscale(15%);
+      transition: transform 0.6s ease;
+    }
+
+    .hero-banner:hover img {
+      transform: scale(1.03);
+    }
+
+    .hero {
+      text-align: center;
+      padding: 55px 20px 40px;
+      max-width: 1120px;
+      margin: auto;
+      animation: fadeUp 0.8s ease;
+    }
+
+    .hero h1 {
+      font-size: 60px;
+      font-weight: 800;
+      line-height: 1.05;
+      letter-spacing: -2px;
+      margin-bottom: 16px;
+    }
+
+    .hero h1 span {
+      color: #6a6a6a;
+    }
+
+    .hero p {
+      max-width: 820px;
+      margin: 0 auto;
+      font-size: 21px;
+      line-height: 1.7;
+      color: #555555;
+    }
+
+    .badges {
+      display: flex;
+      justify-content: center;
+      gap: 28px;
+      flex-wrap: wrap;
+      margin-top: 32px;
+      color: #444444;
+      font-size: 16px;
+      font-weight: 500;
+    }
+
+    .main-btn {
+      margin-top: 35px;
+      background: #111111;
+      color: white;
+      border: none;
+      padding: 18px 34px;
+      border-radius: 14px;
+      font-size: 18px;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.10);
+      transition: all 0.25s ease;
+    }
+
+    .main-btn:hover {
+      transform: translateY(-3px) scale(1.01);
+      background: #2c2c2c;
+    }
+
+    .tree-box {
+      margin-top: 14px;
+      background: #fafafa;
+      border: 1px solid #e4e4e4;
+      border-radius: 14px;
+      padding: 12px;
+      transition: all 0.25s ease;
+    }
+
+    .tree-box:hover {
+      background: #f2f2f2;
+      transform: translateX(2px);
+    }
+
+    .tree-main {
+      font-weight: 700;
+      color: #111111;
+      margin-bottom: 6px;
+    }
+
+    .tree-children {
+      margin-left: 16px;
+      padding-left: 14px;
+      border-left: 2px solid #d7d7d7;
+      color: #555555;
+      font-size: 14px;
+      line-height: 1.8;
+    }
+
+    .arrow-steps {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .arrow-step {
+      background: #f7f7f7;
+      border: 1px solid #e0e0e0;
+      border-radius: 12px;
+      padding: 10px 12px;
+      font-size: 14px;
+      color: #444444;
+      transition: all 0.25s ease;
+    }
+
+    .arrow-step:hover {
+      background: #efefef;
+      transform: translateX(3px);
+    }
+
+    .tool-card {
+      max-width: 930px;
+      margin: 35px auto 70px;
+      background: white;
+      border: 1px solid #dddddd;
+      border-radius: 24px;
+      padding: 30px;
+      box-shadow: 0 10px 35px rgba(0,0,0,0.06);
+      animation: fadeUp 1s ease;
+    }
+
+    .tool-card h3 {
+      font-size: 24px;
+      margin-bottom: 10px;
+    }
+
+    .tool-card p {
+      color: #666666;
+      margin-bottom: 24px;
+      line-height: 1.6;
+    }
+
+    .upload-box {
+      border: 2px dashed #cfcfcf;
+      border-radius: 22px;
+      padding: 28px;
+      background: linear-gradient(180deg, #fcfcfc, #f4f4f4);
+      text-align: center;
+      transition: all 0.3s ease;
+    }
+
+    .upload-box:hover {
+      border-color: #999999;
+      background: linear-gradient(180deg, #ffffff, #f1f1f1);
+    }
+
+    .custom-upload {
+      display: inline-block;
+      padding: 16px 28px;
+      background: #111111;
+      color: #ffffff;
+      border-radius: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.25s ease;
+      box-shadow: 0 10px 20px rgba(0,0,0,0.08);
+    }
+
+    .custom-upload:hover {
+      transform: translateY(-2px) scale(1.01);
+      background: #2a2a2a;
+    }
+
+    #upload {
+      display: none;
+    }
+
+    .file-name {
+      margin-top: 14px;
+      font-size: 14px;
+      color: #666666;
+      transition: opacity 0.25s ease;
+    }
+
+    .detect-btn {
+      margin-top: 18px;
+      background: #ffffff;
+      color: #111111;
+      border: 1px solid #cfcfcf;
+      padding: 14px 26px;
+      border-radius: 12px;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.25s ease;
+    }
+
+    .detect-btn:hover {
+      transform: translateY(-2px);
+      background: #111111;
+      color: #ffffff;
+    }
+
+    .preview-wrap {
+      margin-top: 24px;
+      text-align: center;
+    }
+
+    #preview {
+      display: none;
+      max-width: 100%;
+      max-height: 360px;
+      object-fit: contain;
+      border-radius: 18px;
+      border: 1px solid #d8d8d8;
+      background: #f8f8f8;
+      padding: 10px;
+      animation: fadeUp 0.4s ease;
+    }
+
+    .result {
+      margin-top: 24px;
+      background: #f3f3f3;
+      border: 1px solid #dddddd;
+      border-radius: 18px;
+      padding: 22px;
+      text-align: center;
+      transition: all 0.3s ease;
+    }
+
+    .result:hover {
+      box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+    }
+
+    .result-label {
+      font-size: 13px;
+      font-weight: 700;
+      color: #777777;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 8px;
+    }
+
+    .result-class {
+      font-size: 32px;
+      font-weight: 800;
+      color: #111111;
+      margin-bottom: 6px;
+    }
+
+    .result-score {
+      font-size: 17px;
+      color: #555555;
+    }
+
+    .status-loading {
+      animation: pulse 1.2s infinite;
+    }
+
+    @keyframes fadeUp {
+      from {
+        opacity: 0;
+        transform: translateY(18px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    @keyframes slideDown {
+      from {
+        opacity: 0;
+        transform: translateY(-15px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes pulse {
+      0% { opacity: 0.55; }
+      50% { opacity: 1; }
+      100% { opacity: 0.55; }
+    }
+
+    @media (max-width: 900px) {
+      .navbar {
+        padding: 16px 20px;
+        flex-direction: column;
+        gap: 18px;
+      }
+
+      .nav-links {
+        justify-content: center;
+        gap: 16px;
+      }
+
+      .hero h1 {
+        font-size: 42px;
+      }
+
+      .hero p {
+        font-size: 18px;
+      }
+
+      .brand-text h2 {
+        font-size: 22px;
+      }
+
+      .tool-card {
+        margin: 30px 16px 60px;
+      }
+
+      .dropdown-menu {
+        width: 300px;
+        left: 50%;
+        transform: translateX(-50%);
+      }
+
+      .hero-banner {
+        height: 250px;
+      }
+    }
+  </style>
 </head>
-
 <body>
 
-<div class="card">
-  <h1>INTELKHAT</h1>
-  <p>AI Khat Recognition System</p>
+  <nav class="navbar">
+    <div class="brand">
+      <div class="logo-box">خ</div>
+      <div class="brand-text">
+        <h2>IntelKHAT</h2>
+        <p>AI Khat Recognition System</p>
+      </div>
+    </div>
 
-  <input type="file" id="upload" accept="image/*"><br><br>
-  <button onclick="predict()">Detect Khat</button>
+    <div class="nav-links">
+      <a href="#">Home</a>
 
-  <img id="preview" style="display:none;">
-  
-  <div class="result" id="result">
-    Result will appear here
-  </div>
-</div>
+      <div class="dropdown" id="khatDropdown">
+        <button class="dropdown-toggle" onclick="toggleDropdown('khatDropdown')">Khat Calligraphy ▾</button>
+        <div class="dropdown-menu">
+          <div class="dropdown-title">Detectable Khat Structure</div>
 
-<script>
-const MODEL_URL = "./model/";
-let model;
+          <div class="tree-box">
+            <div class="tree-main">Nasakh</div>
+            <div class="tree-children">├─ Nasakh Mushaf<br>└─ Nasakh Moden</div>
+          </div>
 
-// load model
-async function loadModel() {
-  model = await tmImage.load(
-    MODEL_URL + "model.json",
-    MODEL_URL + "metadata.json"
-  );
-  document.getElementById("result").innerHTML = "Model loaded ✅";
-}
-loadModel();
+          <div class="tree-box">
+            <div class="tree-main">Thuluth</div>
+            <div class="tree-children">├─ Thuluth ‘Adi<br>└─ Thuluth Jali</div>
+          </div>
 
-// preview image
-document.getElementById("upload").addEventListener("change", function(e) {
-  const file = e.target.files[0];
-  if(file){
-    const img = document.getElementById("preview");
-    img.src = window.URL.createObjectURL(file); // 🔥 FIX sini
-    img.style.display = "block";
-  }
-});
+          <div class="tree-box">
+            <div class="tree-main">Diwani</div>
+            <div class="tree-children">├─ Diwani ‘Adi<br>└─ Diwani Jali</div>
+          </div>
 
-// predict
-async function predict() {
-  const img = document.getElementById("preview");
+          <div class="tree-box">
+            <div class="tree-main">Kufi</div>
+            <div class="tree-children">├─ Kufi Murabba‘<br>├─ Kufi Muzakhraf<br>└─ Kufi Fatimi</div>
+          </div>
 
-  if(!img.src){
-    document.getElementById("result").innerHTML = "Upload image first";
-    return;
-  }
+          <div class="tree-box">
+            <div class="tree-main">Farisi</div>
+            <div class="tree-children">├─ Nasta‘liq<br>└─ Shikasta</div>
+          </div>
 
-  const predictions = await model.predict(img);
-  predictions.sort((a,b)=>b.probability - a.probability);
+          <div class="tree-box">
+            <div class="tree-main">Riq‘ah</div>
+            <div class="tree-children">└─ Main style only</div>
+          </div>
+        </div>
+      </div>
 
-  const top = predictions[0];
+      <div class="dropdown" id="aboutDropdown">
+        <button class="dropdown-toggle" onclick="toggleDropdown('aboutDropdown')">About ▾</button>
+        <div class="dropdown-menu">
+          <div class="dropdown-section">
+            <div class="dropdown-title">About IntelKHAT</div>
+            <div class="dropdown-items">
+              IntelKHAT is an AI-powered system developed to recognize Arabic calligraphy styles from uploaded images.
+            </div>
+          </div>
+          <div class="dropdown-section">
+            <div class="dropdown-title">Project Purpose</div>
+            <div class="dropdown-items">
+              To preserve Islamic artistic heritage and help students, beginners, and researchers identify khat styles more easily.
+            </div>
+          </div>
+          <div class="dropdown-section">
+            <div class="dropdown-title">Target Users</div>
+            <div class="dropdown-items">
+              Students, KAFA learners, beginners in khat, educators, and Islamic art enthusiasts.
+            </div>
+          </div>
+        </div>
+      </div>
 
-  document.getElementById("result").innerHTML =
-    `<b>${top.className}</b><br>${(top.probability*100).toFixed(2)}%`;
-}
-</script>
+      <div class="dropdown" id="demoDropdown">
+        <button class="dropdown-toggle" onclick="toggleDropdown('demoDropdown')">Demo ▾</button>
+        <div class="dropdown-menu">
+          <div class="dropdown-title">How to Use</div>
+          <div class="arrow-steps">
+            <div class="arrow-step">1 → Upload an image of Arabic calligraphy</div>
+            <div class="arrow-step">2 → Click “Detect Khat”</div>
+            <div class="arrow-step">3 → Wait for AI prediction</div>
+            <div class="arrow-step">4 → View the top detected khat style</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="dropdown" id="applicationsDropdown">
+        <button class="dropdown-toggle" onclick="toggleDropdown('applicationsDropdown')">Applications ▾</button>
+        <div class="dropdown-menu">
+          <div class="dropdown-section">
+            <div class="dropdown-title">Suitable Uses</div>
+            <div class="dropdown-items">
+              • KAFA and school learning<br>
+              • Islamic art appreciation<br>
+              • Beginner khat reference<br>
+              • Digital heritage preservation
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <button class="nav-btn" onclick="document.getElementById('uploadSection').scrollIntoView({behavior:'smooth'})">Try IntelKHAT</button>
+    </div>
+  </nav>
+
+  <section class="hero-banner">
+    <img src="background.jpg" alt="Arabic calligraphy hero image">
+  </section>
+
+  <section class="hero">
+    <h1>Recognize Arabic Calligraphy <span>with AI</span></h1>
+    <p>
+      A modern platform designed to preserve Islamic artistic heritage by identifying
+      khat styles from uploaded images quickly, clearly, and elegantly.
+    </p>
+
+    <div class="badges">
+      <div>✔ Fast Prediction</div>
+      <div>✔ Elegant Interface</div>
+      <div>✔ Smooth Experience</div>
+    </div>
+
+    <button class="main-btn" onclick="document.getElementById('uploadSection').scrollIntoView({behavior:'smooth'})">
+      Start Detecting
+    </button>
+  </section>
+
+  <section class="tool-card" id="uploadSection">
+    <h3>Upload Calligraphy Image</h3>
+    <p>
+      Choose an image of Arabic calligraphy and let IntelKHAT detect the most likely khat style.
+    </p>
+
+    <div class="upload-box">
+      <label for="upload" class="custom-upload">Choose Image File</label>
+      <input type="file" id="upload" accept="image/*">
+      <div class="file-name" id="fileName">No file selected</div>
+      <button class="detect-btn" onclick="predict()">Detect Khat</button>
+    </div>
+
+    <div class="preview-wrap">
+      <img id="preview" alt="Preview Image">
+    </div>
+
+    <div class="result" id="result">
+      <div class="result-label">System Status</div>
+      <div class="result-class">Waiting for Image</div>
+      <div class="result-score">Upload an image and click Detect Khat</div>
+    </div>
+  </section>
+
+  <script>
+    const MODEL_URL = "./model/";
+    let model;
+
+    async function loadModel() {
+      try {
+        model = await tmImage.load(
+          MODEL_URL + "model.json",
+          MODEL_URL + "metadata.json"
+        );
+
+        document.getElementById("result").innerHTML = `
+          <div class="result-label">System Status</div>
+          <div class="result-class">Model Ready</div>
+          <div class="result-score">Upload an image to begin detection</div>
+        `;
+      } catch (error) {
+        document.getElementById("result").innerHTML = `
+          <div class="result-label">System Status</div>
+          <div class="result-class">Model Error</div>
+          <div class="result-score">Please check your model files and path</div>
+        `;
+      }
+    }
+
+    loadModel();
+
+    document.getElementById("upload").addEventListener("change", function(e) {
+      const file = e.target.files[0];
+      if (file) {
+        document.getElementById("fileName").textContent = file.name;
+
+        const img = document.getElementById("preview");
+        img.src = window.URL.createObjectURL(file);
+        img.style.display = "block";
+
+        document.getElementById("result").innerHTML = `
+          <div class="result-label">Image Loaded</div>
+          <div class="result-class">Ready to Detect</div>
+          <div class="result-score">Click Detect Khat to view result</div>
+        `;
+      }
+    });
+
+    async function predict() {
+      const img = document.getElementById("preview");
+
+      if (!model) {
+        document.getElementById("result").innerHTML = `
+          <div class="result-label">System Status</div>
+          <div class="result-class">Model Not Loaded</div>
+          <div class="result-score">Check model folder and refresh the page</div>
+        `;
+        return;
+      }
+
+      if (!img.src) {
+        document.getElementById("result").innerHTML = `
+          <div class="result-label">No Image</div>
+          <div class="result-class">Upload Image First</div>
+          <div class="result-score">Choose an image before detection</div>
+        `;
+        return;
+      }
+
+      document.getElementById("result").innerHTML = `
+        <div class="result-label">Prediction Status</div>
+        <div class="result-class status-loading">Detecting...</div>
+        <div class="result-score">AI is analyzing the image</div>
+      `;
+
+      const predictions = await model.predict(img);
+      predictions.sort((a, b) => b.probability - a.probability);
+      const top = predictions[0];
+
+      document.getElementById("result").innerHTML = `
+        <div class="result-label">Top Prediction</div>
+        <div class="result-class">${top.className}</div>
+        <div class="result-score">Confidence: ${(top.probability * 100).toFixed(2)}%</div>
+      `;
+    }
+
+    function toggleDropdown(id) {
+      const all = document.querySelectorAll('.dropdown');
+      all.forEach(drop => {
+        if (drop.id !== id) drop.classList.remove('active');
+      });
+      document.getElementById(id).classList.toggle('active');
+    }
+
+    window.addEventListener("click", function(e) {
+      document.querySelectorAll('.dropdown').forEach(drop => {
+        if (!drop.contains(e.target)) {
+          drop.classList.remove("active");
+        }
+      });
+    });
+  </script>
 
 </body>
 </html>
