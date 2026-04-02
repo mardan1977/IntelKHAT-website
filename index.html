@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>IntelKHAT</title>
+  <title>IntelKHAT App</title>
 
   <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
   <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image"></script>
@@ -18,29 +18,54 @@
       padding: 0;
     }
 
-    html {
+    :root {
+      --bg: #efefef;
+      --panel: rgba(255,255,255,0.78);
+      --panel-strong: rgba(255,255,255,0.95);
+      --border: rgba(17,17,17,0.08);
+      --text: #111111;
+      --muted: #666666;
+      --soft: #f6f6f6;
+      --shadow: 0 18px 50px rgba(0,0,0,0.08);
+    }
+
+    html, body {
+      min-height: 100%;
       scroll-behavior: smooth;
     }
 
     body {
       font-family: 'Inter', sans-serif;
-      background: #f5f5f5;
-      color: #111111;
+      color: var(--text);
+      background:
+        radial-gradient(circle at top left, rgba(0,0,0,0.04), transparent 28%),
+        radial-gradient(circle at bottom right, rgba(0,0,0,0.05), transparent 24%),
+        linear-gradient(135deg, #f8f8f8, #ececec 55%, #e8e8e8);
       overflow-x: hidden;
+      padding: 28px;
     }
 
-    .navbar {
-      width: 100%;
-      background: rgba(255,255,255,0.92);
-      backdrop-filter: blur(10px);
-      border-bottom: 1px solid #dddddd;
+    .app-shell {
+      max-width: 1320px;
+      margin: 0 auto;
+      min-height: calc(100vh - 56px);
+      border: 1px solid var(--border);
+      border-radius: 34px;
+      background: rgba(255,255,255,0.55);
+      backdrop-filter: blur(18px);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      animation: fadeIn 0.8s ease;
+    }
+
+    .topbar {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 18px 40px;
-      position: sticky;
-      top: 0;
-      z-index: 1000;
+      padding: 18px 24px;
+      border-bottom: 1px solid var(--border);
+      background: rgba(255,255,255,0.65);
+      backdrop-filter: blur(16px);
       animation: slideDown 0.7s ease;
     }
 
@@ -51,9 +76,9 @@
     }
 
     .logo-box {
-      width: 52px;
-      height: 52px;
-      border-radius: 14px;
+      width: 50px;
+      height: 50px;
+      border-radius: 16px;
       background: #111111;
       color: #ffffff;
       display: flex;
@@ -68,292 +93,313 @@
       transform: rotate(-6deg) scale(1.05);
     }
 
-    .brand-text h2 {
-      font-size: 28px;
-      font-weight: 800;
+    .brand-text h1 {
+      font-size: 24px;
       line-height: 1;
+      font-weight: 800;
     }
 
     .brand-text p {
-      font-size: 13px;
-      color: #666666;
       margin-top: 4px;
+      font-size: 13px;
+      color: var(--muted);
     }
 
-    .nav-links {
+    .topbar-right {
       display: flex;
-      gap: 22px;
+      gap: 12px;
       align-items: center;
-      font-weight: 600;
-      color: #444444;
       flex-wrap: wrap;
     }
 
-    .nav-links a,
-    .dropdown-toggle {
-      text-decoration: none;
-      color: #444444;
-      background: none;
-      border: none;
-      font: inherit;
-      cursor: pointer;
-      transition: color 0.25s ease, transform 0.25s ease;
+    .mini-pill {
+      padding: 10px 14px;
+      border-radius: 999px;
+      background: rgba(17,17,17,0.04);
+      border: 1px solid var(--border);
+      color: #444;
+      font-size: 13px;
+      font-weight: 600;
+      transition: transform 0.25s ease, background 0.25s ease;
     }
 
-    .nav-links a:hover,
-    .dropdown-toggle:hover {
-      color: #111111;
-      transform: translateY(-1px);
+    .mini-pill:hover {
+      transform: translateY(-2px);
+      background: rgba(17,17,17,0.07);
     }
 
-    .dropdown {
-      position: relative;
+    .workspace {
+      display: grid;
+      grid-template-columns: 360px 1fr;
+      min-height: 760px;
     }
 
-    .dropdown-menu {
-      position: absolute;
-      top: 42px;
-      left: 0;
-      width: 360px;
-      max-height: 430px;
-      overflow-y: auto;
-      background: #ffffff;
-      border: 1px solid #dcdcdc;
-      border-radius: 18px;
-      box-shadow: 0 14px 34px rgba(0,0,0,0.10);
-      padding: 16px;
-      display: none;
-      text-align: left;
-      z-index: 1200;
-      animation: fadeUp 0.25s ease;
+    .sidebar {
+      border-right: 1px solid var(--border);
+      background: rgba(250,250,250,0.78);
+      padding: 24px 20px;
+      animation: fadeLeft 0.8s ease;
     }
 
-    .dropdown.active .dropdown-menu {
-      display: block;
+    .main-panel {
+      padding: 26px;
+      animation: fadeUp 0.9s ease;
     }
 
-    .dropdown-section {
+    .section-title {
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: #7b7b7b;
+      font-weight: 800;
       margin-bottom: 14px;
     }
 
-    .dropdown-section:last-child {
-      margin-bottom: 0;
+    .project-card,
+    .info-card,
+    .detect-card,
+    .preview-card,
+    .result-card,
+    .steps-card {
+      background: var(--panel-strong);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      box-shadow: 0 12px 30px rgba(0,0,0,0.05);
+      transition: transform 0.28s ease, box-shadow 0.28s ease, background 0.28s ease;
     }
 
-    .dropdown-title {
-      font-size: 13px;
-      font-weight: 800;
-      color: #111111;
-      margin-bottom: 8px;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
+    .project-card:hover,
+    .info-card:hover,
+    .detect-card:hover,
+    .preview-card:hover,
+    .result-card:hover,
+    .steps-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 18px 34px rgba(0,0,0,0.07);
     }
 
-    .dropdown-items {
-      font-size: 14px;
-      color: #555555;
-      line-height: 1.7;
-    }
-
-    .nav-btn {
-      background: #111111;
-      color: white;
-      border: none;
-      padding: 14px 22px;
-      border-radius: 12px;
-      font-size: 15px;
-      font-weight: 700;
-      cursor: pointer;
-      transition: all 0.25s ease;
-      box-shadow: 0 8px 20px rgba(0,0,0,0.08);
-    }
-
-    .nav-btn:hover {
-      transform: translateY(-2px);
-      background: #2b2b2b;
-    }
-
-    .hero-banner {
-      width: 100%;
-      height: 430px;
-      overflow: hidden;
-      animation: fadeIn 1s ease;
-      border-bottom: 1px solid #dddddd;
-      background: #eaeaea;
-    }
-
-    .hero-banner img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      display: block;
-      filter: grayscale(15%);
-      transition: transform 0.6s ease;
-    }
-
-    .hero-banner:hover img {
-      transform: scale(1.03);
-    }
-
-    .hero {
-      text-align: center;
-      padding: 55px 20px 40px;
-      max-width: 1120px;
-      margin: auto;
-      animation: fadeUp 0.8s ease;
-    }
-
-    .hero h1 {
-      font-size: 60px;
-      font-weight: 800;
-      line-height: 1.05;
-      letter-spacing: -2px;
+    .project-card {
+      padding: 20px;
       margin-bottom: 16px;
     }
 
-    .hero h1 span {
-      color: #6a6a6a;
+    .project-card h2 {
+      font-size: 22px;
+      margin-bottom: 8px;
     }
 
-    .hero p {
-      max-width: 820px;
-      margin: 0 auto;
-      font-size: 21px;
-      line-height: 1.7;
-      color: #555555;
+    .project-card p {
+      color: var(--muted);
+      line-height: 1.65;
+      font-size: 14px;
     }
 
-    .badges {
-      display: flex;
-      justify-content: center;
-      gap: 28px;
-      flex-wrap: wrap;
-      margin-top: 32px;
-      color: #444444;
-      font-size: 16px;
-      font-weight: 500;
+    .status-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-top: 18px;
     }
 
-    .main-btn {
-      margin-top: 35px;
-      background: #111111;
-      color: white;
-      border: none;
-      padding: 18px 34px;
-      border-radius: 14px;
-      font-size: 18px;
-      font-weight: 700;
-      cursor: pointer;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.10);
-      transition: all 0.25s ease;
+    .status-box {
+      border-radius: 18px;
+      background: var(--soft);
+      border: 1px solid var(--border);
+      padding: 14px;
+      transition: transform 0.25s ease, background 0.25s ease;
     }
 
-    .main-btn:hover {
-      transform: translateY(-3px) scale(1.01);
-      background: #2c2c2c;
+    .status-box:hover {
+      transform: translateY(-2px);
+      background: #f0f0f0;
     }
 
-    .tree-box {
-      margin-top: 14px;
-      background: #fafafa;
-      border: 1px solid #e4e4e4;
-      border-radius: 14px;
-      padding: 12px;
-      transition: all 0.25s ease;
-    }
-
-    .tree-box:hover {
-      background: #f2f2f2;
-      transform: translateX(2px);
-    }
-
-    .tree-main {
-      font-weight: 700;
-      color: #111111;
+    .status-label {
+      font-size: 12px;
+      color: #7a7a7a;
       margin-bottom: 6px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
     }
 
-    .tree-children {
-      margin-left: 16px;
-      padding-left: 14px;
-      border-left: 2px solid #d7d7d7;
-      color: #555555;
-      font-size: 14px;
-      line-height: 1.8;
+    .status-value {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--text);
     }
 
-    .arrow-steps {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
+    .info-card {
+      padding: 18px;
+      margin-bottom: 14px;
     }
 
-    .arrow-step {
-      background: #f7f7f7;
-      border: 1px solid #e0e0e0;
-      border-radius: 12px;
-      padding: 10px 12px;
-      font-size: 14px;
-      color: #444444;
-      transition: all 0.25s ease;
-    }
-
-    .arrow-step:hover {
-      background: #efefef;
-      transform: translateX(3px);
-    }
-
-    .tool-card {
-      max-width: 930px;
-      margin: 35px auto 70px;
-      background: white;
-      border: 1px solid #dddddd;
-      border-radius: 24px;
-      padding: 30px;
-      box-shadow: 0 10px 35px rgba(0,0,0,0.06);
-      animation: fadeUp 1s ease;
-    }
-
-    .tool-card h3 {
-      font-size: 24px;
+    .info-card h3 {
+      font-size: 16px;
       margin-bottom: 10px;
     }
 
-    .tool-card p {
-      color: #666666;
-      margin-bottom: 24px;
-      line-height: 1.6;
+    .info-card p,
+    .info-card li {
+      font-size: 14px;
+      line-height: 1.7;
+      color: #555;
     }
 
-    .upload-box {
+    .khat-list {
+      display: grid;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .khat-item {
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      background: #f8f8f8;
+      padding: 12px 14px;
+      transition: transform 0.25s ease, background 0.25s ease;
+    }
+
+    .khat-item:hover {
+      transform: translateX(4px);
+      background: #f1f1f1;
+    }
+
+    .khat-item strong {
+      display: block;
+      font-size: 14px;
+      margin-bottom: 4px;
+    }
+
+    .main-grid {
+      display: grid;
+      grid-template-columns: 1.12fr 0.88fr;
+      gap: 20px;
+    }
+
+    .detect-card {
+      padding: 22px;
+      margin-bottom: 20px;
+    }
+
+    .panel-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+    .panel-head h2 {
+      font-size: 30px;
+      line-height: 1.1;
+      margin-bottom: 8px;
+    }
+
+    .panel-head p {
+      color: var(--muted);
+      line-height: 1.7;
+      max-width: 640px;
+    }
+
+    .app-badge {
+      white-space: nowrap;
+      padding: 10px 14px;
+      border-radius: 999px;
+      background: #111111;
+      color: white;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      animation: pulseSoft 2s infinite;
+    }
+
+    .upload-zone {
       border: 2px dashed #cfcfcf;
-      border-radius: 22px;
+      border-radius: 24px;
+      background: linear-gradient(180deg, #fcfcfc, #f3f3f3);
       padding: 28px;
-      background: linear-gradient(180deg, #fcfcfc, #f4f4f4);
       text-align: center;
       transition: all 0.3s ease;
     }
 
-    .upload-box:hover {
-      border-color: #999999;
+    .upload-zone:hover {
+      border-color: #9d9d9d;
+      transform: translateY(-2px);
       background: linear-gradient(180deg, #ffffff, #f1f1f1);
     }
 
-    .custom-upload {
-      display: inline-block;
-      padding: 16px 28px;
+    .upload-icon {
+      width: 62px;
+      height: 62px;
+      margin: 0 auto 14px;
+      border-radius: 20px;
       background: #111111;
-      color: #ffffff;
-      border-radius: 14px;
-      font-weight: 700;
-      cursor: pointer;
-      transition: all 0.25s ease;
-      box-shadow: 0 10px 20px rgba(0,0,0,0.08);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 26px;
+      font-weight: 800;
+      transition: transform 0.3s ease;
     }
 
-    .custom-upload:hover {
-      transform: translateY(-2px) scale(1.01);
+    .upload-zone:hover .upload-icon {
+      transform: scale(1.06) rotate(-4deg);
+    }
+
+    .upload-zone h3 {
+      font-size: 22px;
+      margin-bottom: 8px;
+    }
+
+    .upload-zone p {
+      color: var(--muted);
+      font-size: 15px;
+      line-height: 1.65;
+      max-width: 520px;
+      margin: 0 auto;
+    }
+
+    .upload-actions {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 22px;
+    }
+
+    .btn,
+    .btn-secondary {
+      border: none;
+      border-radius: 16px;
+      padding: 15px 22px;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform 0.25s ease, background 0.25s ease, color 0.25s ease, box-shadow 0.25s ease;
+    }
+
+    .btn {
+      background: #111111;
+      color: #ffffff;
+      box-shadow: 0 12px 22px rgba(0,0,0,0.08);
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
       background: #2a2a2a;
+    }
+
+    .btn-secondary {
+      background: #ffffff;
+      color: #111111;
+      border: 1px solid #d7d7d7;
+    }
+
+    .btn-secondary:hover {
+      transform: translateY(-2px);
+      background: #f3f3f3;
     }
 
     #upload {
@@ -361,85 +407,130 @@
     }
 
     .file-name {
-      margin-top: 14px;
+      margin-top: 16px;
       font-size: 14px;
       color: #666666;
       transition: opacity 0.25s ease;
     }
 
-    .detect-btn {
-      margin-top: 18px;
-      background: #ffffff;
-      color: #111111;
-      border: 1px solid #cfcfcf;
-      padding: 14px 26px;
-      border-radius: 12px;
-      font-size: 16px;
-      font-weight: 700;
-      cursor: pointer;
-      transition: all 0.25s ease;
+    .preview-card,
+    .result-card,
+    .steps-card {
+      padding: 20px;
     }
 
-    .detect-btn:hover {
-      transform: translateY(-2px);
-      background: #111111;
-      color: #ffffff;
-    }
-
-    .preview-wrap {
-      margin-top: 24px;
-      text-align: center;
+    .preview-card h3,
+    .result-card h3,
+    .steps-card h3 {
+      font-size: 18px;
+      margin-bottom: 14px;
     }
 
     #preview {
       display: none;
-      max-width: 100%;
+      width: 100%;
       max-height: 360px;
       object-fit: contain;
-      border-radius: 18px;
-      border: 1px solid #d8d8d8;
+      border-radius: 20px;
+      border: 1px solid #dcdcdc;
       background: #f8f8f8;
       padding: 10px;
       animation: fadeUp 0.4s ease;
     }
 
-    .result {
-      margin-top: 24px;
-      background: #f3f3f3;
-      border: 1px solid #dddddd;
-      border-radius: 18px;
-      padding: 22px;
+    .empty-preview {
+      min-height: 280px;
+      border-radius: 20px;
+      border: 1px dashed #d6d6d6;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      color: #8a8a8a;
+      background: linear-gradient(180deg, #fbfbfb, #f4f4f4);
+      padding: 24px;
+    }
+
+    .result-box {
+      background: #f5f5f5;
+      border: 1px solid #dfdfdf;
+      border-radius: 20px;
+      padding: 24px;
       text-align: center;
       transition: all 0.3s ease;
     }
 
-    .result:hover {
-      box-shadow: 0 10px 20px rgba(0,0,0,0.05);
-    }
-
     .result-label {
-      font-size: 13px;
-      font-weight: 700;
-      color: #777777;
+      font-size: 12px;
+      font-weight: 800;
+      color: #7a7a7a;
       text-transform: uppercase;
       letter-spacing: 1px;
-      margin-bottom: 8px;
+      margin-bottom: 10px;
     }
 
     .result-class {
-      font-size: 32px;
+      font-size: 34px;
       font-weight: 800;
-      color: #111111;
-      margin-bottom: 6px;
+      color: var(--text);
+      margin-bottom: 8px;
     }
 
     .result-score {
-      font-size: 17px;
+      font-size: 16px;
       color: #555555;
+      line-height: 1.6;
+    }
+
+    .steps-list {
+      display: grid;
+      gap: 10px;
+    }
+
+    .step-item {
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+      padding: 14px;
+      border-radius: 16px;
+      background: #f8f8f8;
+      border: 1px solid #e4e4e4;
+      transition: transform 0.25s ease, background 0.25s ease;
+    }
+
+    .step-item:hover {
+      transform: translateX(4px);
+      background: #f2f2f2;
+    }
+
+    .step-no {
+      min-width: 30px;
+      height: 30px;
+      border-radius: 999px;
+      background: #111111;
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      font-weight: 800;
+      margin-top: 2px;
+    }
+
+    .step-text strong {
+      display: block;
+      font-size: 14px;
+      margin-bottom: 2px;
+    }
+
+    .step-text span {
+      font-size: 13px;
+      line-height: 1.6;
+      color: #606060;
     }
 
     .status-loading {
-      animation: pulse 1.2s infinite;
+      animation: pulse 1.15s infinite;
     }
 
     @keyframes fadeUp {
@@ -450,6 +541,17 @@
       to {
         opacity: 1;
         transform: translateY(0);
+      }
+    }
+
+    @keyframes fadeLeft {
+      from {
+        opacity: 0;
+        transform: translateX(-20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(0);
       }
     }
 
@@ -475,201 +577,224 @@
       100% { opacity: 0.55; }
     }
 
-    @media (max-width: 900px) {
-      .navbar {
-        padding: 16px 20px;
+    @keyframes pulseSoft {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.03); }
+      100% { transform: scale(1); }
+    }
+
+    @media (max-width: 1100px) {
+      .workspace,
+      .main-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .sidebar {
+        border-right: none;
+        border-bottom: 1px solid var(--border);
+      }
+    }
+
+    @media (max-width: 720px) {
+      body {
+        padding: 14px;
+      }
+
+      .topbar {
+        padding: 16px;
         flex-direction: column;
-        gap: 18px;
+        align-items: flex-start;
+        gap: 14px;
       }
 
-      .nav-links {
-        justify-content: center;
-        gap: 16px;
+      .main-panel,
+      .sidebar {
+        padding: 18px;
       }
 
-      .hero h1 {
-        font-size: 42px;
+      .panel-head {
+        flex-direction: column;
       }
 
-      .hero p {
-        font-size: 18px;
+      .panel-head h2 {
+        font-size: 24px;
       }
 
-      .brand-text h2 {
-        font-size: 22px;
+      .status-grid {
+        grid-template-columns: 1fr;
       }
 
-      .tool-card {
-        margin: 30px 16px 60px;
+      .upload-actions {
+        flex-direction: column;
       }
 
-      .dropdown-menu {
-        width: 300px;
-        left: 50%;
-        transform: translateX(-50%);
-      }
-
-      .hero-banner {
-        height: 250px;
+      .btn,
+      .btn-secondary,
+      .mini-pill {
+        width: 100%;
+        text-align: center;
       }
     }
   </style>
 </head>
 <body>
-
-  <nav class="navbar">
-    <div class="brand">
-      <div class="logo-box">خ</div>
-      <div class="brand-text">
-        <h2>IntelKHAT</h2>
-        <p>AI Khat Recognition System</p>
-      </div>
-    </div>
-
-    <div class="nav-links">
-      <a href="#">Home</a>
-
-      <div class="dropdown" id="khatDropdown">
-        <button class="dropdown-toggle" onclick="toggleDropdown('khatDropdown')">Khat Calligraphy ▾</button>
-        <div class="dropdown-menu">
-          <div class="dropdown-title">Detectable Khat Structure</div>
-
-          <div class="tree-box">
-            <div class="tree-main">Nasakh</div>
-            <div class="tree-children">├─ Nasakh Mushaf<br>└─ Nasakh Moden</div>
-          </div>
-
-          <div class="tree-box">
-            <div class="tree-main">Thuluth</div>
-            <div class="tree-children">├─ Thuluth ‘Adi<br>└─ Thuluth Jali</div>
-          </div>
-
-          <div class="tree-box">
-            <div class="tree-main">Diwani</div>
-            <div class="tree-children">├─ Diwani ‘Adi<br>└─ Diwani Jali</div>
-          </div>
-
-          <div class="tree-box">
-            <div class="tree-main">Kufi</div>
-            <div class="tree-children">├─ Kufi Murabba‘<br>├─ Kufi Muzakhraf<br>└─ Kufi Fatimi</div>
-          </div>
-
-          <div class="tree-box">
-            <div class="tree-main">Farisi</div>
-            <div class="tree-children">├─ Nasta‘liq<br>└─ Shikasta</div>
-          </div>
-
-          <div class="tree-box">
-            <div class="tree-main">Riq‘ah</div>
-            <div class="tree-children">└─ Main style only</div>
-          </div>
+  <div class="app-shell">
+    <header class="topbar">
+      <div class="brand">
+        <div class="logo-box">خ</div>
+        <div class="brand-text">
+          <h1>IntelKHAT</h1>
+          <p>Innovation Prototype • AI Khat Recognition</p>
         </div>
       </div>
 
-      <div class="dropdown" id="aboutDropdown">
-        <button class="dropdown-toggle" onclick="toggleDropdown('aboutDropdown')">About ▾</button>
-        <div class="dropdown-menu">
-          <div class="dropdown-section">
-            <div class="dropdown-title">About IntelKHAT</div>
-            <div class="dropdown-items">
-              IntelKHAT is an AI-powered system developed to recognize Arabic calligraphy styles from uploaded images.
+      <div class="topbar-right">
+        <div class="mini-pill">Student Innovation App</div>
+        <div class="mini-pill">Teachable Machine Model</div>
+        <div class="mini-pill">Live Detection</div>
+      </div>
+    </header>
+
+    <div class="workspace">
+      <aside class="sidebar">
+        <div class="section-title">Project Overview</div>
+
+        <div class="project-card">
+          <h2>IntelKHAT Prototype</h2>
+          <p>
+            An innovation application that helps users identify Arabic calligraphy styles from uploaded images in a cleaner,
+            more app-like workspace instead of a public website layout.
+          </p>
+
+          <div class="status-grid">
+            <div class="status-box">
+              <div class="status-label">Focus</div>
+              <div class="status-value">Khat Recognition</div>
             </div>
-          </div>
-          <div class="dropdown-section">
-            <div class="dropdown-title">Project Purpose</div>
-            <div class="dropdown-items">
-              To preserve Islamic artistic heritage and help students, beginners, and researchers identify khat styles more easily.
+            <div class="status-box">
+              <div class="status-label">Mode</div>
+              <div class="status-value">Image Upload</div>
             </div>
-          </div>
-          <div class="dropdown-section">
-            <div class="dropdown-title">Target Users</div>
-            <div class="dropdown-items">
-              Students, KAFA learners, beginners in khat, educators, and Islamic art enthusiasts.
+            <div class="status-box">
+              <div class="status-label">Model</div>
+              <div class="status-value">Local TM Model</div>
+            </div>
+            <div class="status-box">
+              <div class="status-label">Output</div>
+              <div class="status-value">Top Prediction</div>
             </div>
           </div>
         </div>
-      </div>
 
-      <div class="dropdown" id="demoDropdown">
-        <button class="dropdown-toggle" onclick="toggleDropdown('demoDropdown')">Demo ▾</button>
-        <div class="dropdown-menu">
-          <div class="dropdown-title">How to Use</div>
-          <div class="arrow-steps">
-            <div class="arrow-step">1 → Upload an image of Arabic calligraphy</div>
-            <div class="arrow-step">2 → Click “Detect Khat”</div>
-            <div class="arrow-step">3 → Wait for AI prediction</div>
-            <div class="arrow-step">4 → View the top detected khat style</div>
+        <div class="info-card">
+          <h3>Supported Khat</h3>
+          <div class="khat-list">
+            <div class="khat-item"><strong>Nasakh</strong><span>Nasakh Mushaf, Nasakh Moden</span></div>
+            <div class="khat-item"><strong>Thuluth</strong><span>Thuluth ‘Adi, Thuluth Jali</span></div>
+            <div class="khat-item"><strong>Diwani</strong><span>Diwani ‘Adi, Diwani Jali</span></div>
+            <div class="khat-item"><strong>Kufi</strong><span>Murabba‘, Muzakhraf, Fatimi</span></div>
+            <div class="khat-item"><strong>Farisi</strong><span>Nasta‘liq, Shikasta</span></div>
+            <div class="khat-item"><strong>Riq‘ah</strong><span>Main style</span></div>
           </div>
         </div>
-      </div>
 
-      <div class="dropdown" id="applicationsDropdown">
-        <button class="dropdown-toggle" onclick="toggleDropdown('applicationsDropdown')">Applications ▾</button>
-        <div class="dropdown-menu">
-          <div class="dropdown-section">
-            <div class="dropdown-title">Suitable Uses</div>
-            <div class="dropdown-items">
-              • KAFA and school learning<br>
-              • Islamic art appreciation<br>
-              • Beginner khat reference<br>
-              • Digital heritage preservation
+        <div class="info-card">
+          <h3>Innovation Purpose</h3>
+          <p>
+            Designed for students, beginners, and educators who need a simple interface to test Arabic calligraphy style recognition quickly.
+          </p>
+        </div>
+      </aside>
+
+      <main class="main-panel">
+        <div class="detect-card">
+          <div class="panel-head">
+            <div>
+              <h2>AI Khat Detection Workspace</h2>
+              <p>
+                Upload one calligraphy image, run the model, and view the most likely khat style prediction with confidence score.
+              </p>
+            </div>
+            <div class="app-badge">APP MODE</div>
+          </div>
+
+          <div class="upload-zone">
+            <div class="upload-icon">↑</div>
+            <h3>Upload Calligraphy Image</h3>
+            <p>
+              Select an image file from your device. The system will preview the image before running AI detection.
+            </p>
+
+            <div class="upload-actions">
+              <label for="upload" class="btn">Choose Image</label>
+              <button class="btn-secondary" onclick="predict()">Detect Khat</button>
+            </div>
+
+            <input type="file" id="upload" accept="image/*">
+            <div class="file-name" id="fileName">No file selected</div>
+          </div>
+        </div>
+
+        <div class="main-grid">
+          <div>
+            <div class="preview-card">
+              <h3>Image Preview</h3>
+              <div class="empty-preview" id="emptyPreview">Uploaded image preview will appear here.</div>
+              <img id="preview" alt="Preview Image">
+            </div>
+          </div>
+
+          <div>
+            <div class="result-card" style="margin-bottom: 20px;">
+              <h3>Detection Result</h3>
+              <div class="result-box" id="result">
+                <div class="result-label">System Status</div>
+                <div class="result-class">Waiting for Image</div>
+                <div class="result-score">Upload an image and click Detect Khat.</div>
+              </div>
+            </div>
+
+            <div class="steps-card">
+              <h3>How It Works</h3>
+              <div class="steps-list">
+                <div class="step-item">
+                  <div class="step-no">1</div>
+                  <div class="step-text">
+                    <strong>Choose image</strong>
+                    <span>Select one Arabic calligraphy image from your device.</span>
+                  </div>
+                </div>
+                <div class="step-item">
+                  <div class="step-no">2</div>
+                  <div class="step-text">
+                    <strong>Preview file</strong>
+                    <span>The system shows the uploaded image before prediction.</span>
+                  </div>
+                </div>
+                <div class="step-item">
+                  <div class="step-no">3</div>
+                  <div class="step-text">
+                    <strong>Run model</strong>
+                    <span>Teachable Machine analyzes the image locally.</span>
+                  </div>
+                </div>
+                <div class="step-item">
+                  <div class="step-no">4</div>
+                  <div class="step-text">
+                    <strong>View result</strong>
+                    <span>See the top predicted khat style and confidence score.</span>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
-      </div>
-
-      <button class="nav-btn" onclick="document.getElementById('uploadSection').scrollIntoView({behavior:'smooth'})">Try IntelKHAT</button>
+      </main>
     </div>
-  </nav>
-
-  <section class="hero-banner">
-    <img src="background.jpg" alt="Arabic calligraphy hero image">
-  </section>
-
-  <section class="hero">
-    <h1>Recognize Arabic Calligraphy <span>with AI</span></h1>
-    <p>
-      A modern platform designed to preserve Islamic artistic heritage by identifying
-      khat styles from uploaded images quickly, clearly, and elegantly.
-    </p>
-
-    <div class="badges">
-      <div>✔ Fast Prediction</div>
-      <div>✔ Elegant Interface</div>
-      <div>✔ Smooth Experience</div>
-    </div>
-
-    <button class="main-btn" onclick="document.getElementById('uploadSection').scrollIntoView({behavior:'smooth'})">
-      Start Detecting
-    </button>
-  </section>
-
-  <section class="tool-card" id="uploadSection">
-    <h3>Upload Calligraphy Image</h3>
-    <p>
-      Choose an image of Arabic calligraphy and let IntelKHAT detect the most likely khat style.
-    </p>
-
-    <div class="upload-box">
-      <label for="upload" class="custom-upload">Choose Image File</label>
-      <input type="file" id="upload" accept="image/*">
-      <div class="file-name" id="fileName">No file selected</div>
-      <button class="detect-btn" onclick="predict()">Detect Khat</button>
-    </div>
-
-    <div class="preview-wrap">
-      <img id="preview" alt="Preview Image">
-    </div>
-
-    <div class="result" id="result">
-      <div class="result-label">System Status</div>
-      <div class="result-class">Waiting for Image</div>
-      <div class="result-score">Upload an image and click Detect Khat</div>
-    </div>
-  </section>
+  </div>
 
   <script>
-    const MODEL_URL = "https://mardan1977.github.io/IntelKHAT-website/model/";
+	const MODEL_URL = "https://mardan1977.github.io/IntelKHAT-website/model/";
     let model;
 
     async function loadModel() {
@@ -682,13 +807,13 @@
         document.getElementById("result").innerHTML = `
           <div class="result-label">System Status</div>
           <div class="result-class">Model Ready</div>
-          <div class="result-score">Upload an image to begin detection</div>
+          <div class="result-score">Upload an image to begin detection.</div>
         `;
       } catch (error) {
         document.getElementById("result").innerHTML = `
           <div class="result-label">System Status</div>
           <div class="result-class">Model Error</div>
-          <div class="result-score">Please check your model files and path</div>
+          <div class="result-score">Please check your model files and folder path.</div>
         `;
       }
     }
@@ -703,11 +828,12 @@
         const img = document.getElementById("preview");
         img.src = window.URL.createObjectURL(file);
         img.style.display = "block";
+        document.getElementById("emptyPreview").style.display = "none";
 
         document.getElementById("result").innerHTML = `
           <div class="result-label">Image Loaded</div>
           <div class="result-class">Ready to Detect</div>
-          <div class="result-score">Click Detect Khat to view result</div>
+          <div class="result-score">Click Detect Khat to view result.</div>
         `;
       }
     });
@@ -719,7 +845,7 @@
         document.getElementById("result").innerHTML = `
           <div class="result-label">System Status</div>
           <div class="result-class">Model Not Loaded</div>
-          <div class="result-score">Check model folder and refresh the page</div>
+          <div class="result-score">Check model folder and refresh the page.</div>
         `;
         return;
       }
@@ -728,7 +854,7 @@
         document.getElementById("result").innerHTML = `
           <div class="result-label">No Image</div>
           <div class="result-class">Upload Image First</div>
-          <div class="result-score">Choose an image before detection</div>
+          <div class="result-score">Choose an image before detection.</div>
         `;
         return;
       }
@@ -736,7 +862,7 @@
       document.getElementById("result").innerHTML = `
         <div class="result-label">Prediction Status</div>
         <div class="result-class status-loading">Detecting...</div>
-        <div class="result-score">AI is analyzing the image</div>
+        <div class="result-score">AI is analyzing the image.</div>
       `;
 
       const predictions = await model.predict(img);
@@ -749,23 +875,6 @@
         <div class="result-score">Confidence: ${(top.probability * 100).toFixed(2)}%</div>
       `;
     }
-
-    function toggleDropdown(id) {
-      const all = document.querySelectorAll('.dropdown');
-      all.forEach(drop => {
-        if (drop.id !== id) drop.classList.remove('active');
-      });
-      document.getElementById(id).classList.toggle('active');
-    }
-
-    window.addEventListener("click", function(e) {
-      document.querySelectorAll('.dropdown').forEach(drop => {
-        if (!drop.contains(e.target)) {
-          drop.classList.remove("active");
-        }
-      });
-    });
   </script>
-
 </body>
 </html>
