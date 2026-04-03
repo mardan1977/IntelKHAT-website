@@ -809,13 +809,14 @@
           <div class="result-class">Model Ready</div>
           <div class="result-score">Upload an image to begin detection.</div>
         `;
-      } catch (error) {
-        document.getElementById("result").innerHTML = `
-          <div class="result-label">System Status</div>
-          <div class="result-class">Model Error</div>
-          <div class="result-score">Please check your model files and folder path.</div>
-        `;
-      }
+	  } catch (error) {
+  document.getElementById("result").innerHTML = `
+    <div class="result-label">System Status</div>
+    <div class="result-class">Model Error</div>
+    <div class="result-score">${error.message}</div>
+  `;
+  console.error(error);
+}
     }
 
     loadModel();
