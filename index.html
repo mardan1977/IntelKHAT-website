@@ -1,12 +1,12 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ms">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>IntelKHAT App</title>
+  <title>Aplikasi IntelKHAT</title>
 
-  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@1.3.1/dist/tf.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@0.8/dist/teachablemachine-image.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -644,64 +644,64 @@
         <div class="logo-box">خ</div>
         <div class="brand-text">
           <h1>IntelKHAT</h1>
-          <p>Innovation Prototype • AI Khat Recognition</p>
+          <p>Prototaip Inovasi • Pengecaman Khat Berasaskan AI</p>
         </div>
       </div>
 
       <div class="topbar-right">
-        <div class="mini-pill">Student Innovation App</div>
-        <div class="mini-pill">Teachable Machine Model</div>
-        <div class="mini-pill">Live Detection</div>
+        <div class="mini-pill">Aplikasi Inovasi Pelajar</div>
+        <div class="mini-pill">Model Teachable Machine</div>
+        <div class="mini-pill">Pengesanan Secara Langsung</div>
       </div>
     </header>
 
     <div class="workspace">
       <aside class="sidebar">
-        <div class="section-title">Project Overview</div>
+        <div class="section-title">Penerangan Projek</div>
 
         <div class="project-card">
-          <h2>IntelKHAT Prototype</h2>
+          <h2>Prototaip IntelKHAT</h2>
           <p>
-            An innovation application that helps users identify Arabic calligraphy styles from uploaded images in a cleaner,
-            more app-like workspace instead of a public website layout.
+            Aplikasi inovasi yang membantu pengguna mengenal pasti jenis tulisan khat Arab melalui imej yang dimuat naik
+            dalam ruang kerja yang lebih kemas dan berbentuk aplikasi berbanding paparan laman web biasa.
           </p>
 
           <div class="status-grid">
             <div class="status-box">
-              <div class="status-label">Focus</div>
-              <div class="status-value">Khat Recognition</div>
+              <div class="status-label">Fokus</div>
+              <div class="status-value">Pengecaman Khat</div>
             </div>
             <div class="status-box">
-              <div class="status-label">Mode</div>
-              <div class="status-value">Image Upload</div>
+              <div class="status-label">Mod</div>
+              <div class="status-value">Muat Naik Imej</div>
             </div>
             <div class="status-box">
               <div class="status-label">Model</div>
-              <div class="status-value">Local TM Model</div>
+              <div class="status-value">Model TM Tempatan</div>
             </div>
             <div class="status-box">
               <div class="status-label">Output</div>
-              <div class="status-value">Top Prediction</div>
+              <div class="status-value">Ramalan Tertinggi</div>
             </div>
           </div>
         </div>
 
         <div class="info-card">
-          <h3>Supported Khat</h3>
+          <h3>Jenis Khat Disokong</h3>
           <div class="khat-list">
             <div class="khat-item"><strong>Nasakh</strong><span>Nasakh Mushaf, Nasakh Moden</span></div>
             <div class="khat-item"><strong>Thuluth</strong><span>Thuluth ‘Adi, Thuluth Jali</span></div>
             <div class="khat-item"><strong>Diwani</strong><span>Diwani ‘Adi, Diwani Jali</span></div>
             <div class="khat-item"><strong>Kufi</strong><span>Murabba‘, Muzakhraf, Fatimi</span></div>
             <div class="khat-item"><strong>Farisi</strong><span>Nasta‘liq, Shikasta</span></div>
-            <div class="khat-item"><strong>Riq‘ah</strong><span>Main style</span></div>
+            <div class="khat-item"><strong>Riq‘ah</strong><span>Gaya utama</span></div>
           </div>
         </div>
 
         <div class="info-card">
-          <h3>Innovation Purpose</h3>
+          <h3>Tujuan Inovasi</h3>
           <p>
-            Designed for students, beginners, and educators who need a simple interface to test Arabic calligraphy style recognition quickly.
+            Direka untuk pelajar, pemula dan pendidik yang memerlukan antaramuka mudah bagi menguji pengecaman gaya khat Arab dengan cepat.
           </p>
         </div>
       </aside>
@@ -710,79 +710,79 @@
         <div class="detect-card">
           <div class="panel-head">
             <div>
-              <h2>AI Khat Detection Workspace</h2>
+              <h2>Ruang Kerja Pengesanan Khat AI</h2>
               <p>
-                Upload one calligraphy image, run the model, and view the most likely khat style prediction with confidence score.
+                Muat naik satu imej khat, jalankan model, dan lihat ramalan jenis khat yang paling berkemungkinan bersama skor keyakinan.
               </p>
             </div>
-            <div class="app-badge">APP MODE</div>
+            <div class="app-badge">MOD APLIKASI</div>
           </div>
 
           <div class="upload-zone">
             <div class="upload-icon">↑</div>
-            <h3>Upload Calligraphy Image</h3>
+            <h3>Muat Naik Imej Khat</h3>
             <p>
-              Select an image file from your device. The system will preview the image before running AI detection.
+              Pilih satu fail imej daripada peranti anda. Sistem akan memaparkan pratonton imej sebelum menjalankan pengesanan AI.
             </p>
 
             <div class="upload-actions">
-              <label for="upload" class="btn">Choose Image</label>
-              <button class="btn-secondary" onclick="predict()">Detect Khat</button>
+              <label for="upload" class="btn">Pilih Imej</label>
+              <button class="btn-secondary" onclick="predict()">Kesan Khat</button>
             </div>
 
             <input type="file" id="upload" accept="image/*">
-            <div class="file-name" id="fileName">No file selected</div>
+            <div class="file-name" id="fileName">Tiada fail dipilih</div>
           </div>
         </div>
 
         <div class="main-grid">
           <div>
             <div class="preview-card">
-              <h3>Image Preview</h3>
-              <div class="empty-preview" id="emptyPreview">Uploaded image preview will appear here.</div>
-              <img id="preview" alt="Preview Image">
+              <h3>Pratonton Imej</h3>
+              <div class="empty-preview" id="emptyPreview">Pratonton imej yang dimuat naik akan dipaparkan di sini.</div>
+              <img id="preview" alt="Pratonton Imej">
             </div>
           </div>
 
           <div>
             <div class="result-card" style="margin-bottom: 20px;">
-              <h3>Detection Result</h3>
+              <h3>Keputusan Pengesanan</h3>
               <div class="result-box" id="result">
-                <div class="result-label">System Status</div>
-                <div class="result-class">Waiting for Image</div>
-                <div class="result-score">Upload an image and click Detect Khat.</div>
+                <div class="result-label">Status Sistem</div>
+                <div class="result-class">Menunggu Imej</div>
+                <div class="result-score">Muat naik imej dan klik butang Kesan Khat.</div>
               </div>
             </div>
 
             <div class="steps-card">
-              <h3>How It Works</h3>
+              <h3>Cara Sistem Berfungsi</h3>
               <div class="steps-list">
                 <div class="step-item">
                   <div class="step-no">1</div>
                   <div class="step-text">
-                    <strong>Choose image</strong>
-                    <span>Select one Arabic calligraphy image from your device.</span>
+                    <strong>Pilih imej</strong>
+                    <span>Pilih satu imej kaligrafi Arab daripada peranti anda.</span>
                   </div>
                 </div>
                 <div class="step-item">
                   <div class="step-no">2</div>
                   <div class="step-text">
-                    <strong>Preview file</strong>
-                    <span>The system shows the uploaded image before prediction.</span>
+                    <strong>Pratonton fail</strong>
+                    <span>Sistem memaparkan imej yang dimuat naik sebelum ramalan dibuat.</span>
                   </div>
                 </div>
                 <div class="step-item">
                   <div class="step-no">3</div>
                   <div class="step-text">
-                    <strong>Run model</strong>
-                    <span>Teachable Machine analyzes the image locally.</span>
+                    <strong>Jalankan model</strong>
+                    <span>Teachable Machine menganalisis imej secara tempatan.</span>
                   </div>
                 </div>
                 <div class="step-item">
                   <div class="step-no">4</div>
                   <div class="step-text">
-                    <strong>View result</strong>
-                    <span>See the top predicted khat style and confidence score.</span>
+                    <strong>Lihat keputusan</strong>
+                    <span>Lihat jenis khat yang diramal dan skor keyakinannya.</span>
                   </div>
                 </div>
               </div>
@@ -794,7 +794,7 @@
   </div>
 
   <script>
-	const MODEL_URL = "https://mardan1977.github.io/IntelKHAT-website/";
+    const MODEL_URL = "https://mardan1977.github.io/IntelKHAT-website/model/";
     let model;
 
     async function loadModel() {
@@ -805,18 +805,17 @@
         );
 
         document.getElementById("result").innerHTML = `
-          <div class="result-label">System Status</div>
-          <div class="result-class">Model Ready</div>
-          <div class="result-score">Upload an image to begin detection.</div>
+          <div class="result-label">Status Sistem</div>
+          <div class="result-class">Model Sedia Digunakan</div>
+          <div class="result-score">Muat naik imej untuk memulakan pengesanan.</div>
         `;
-	  } catch (error) {
-  document.getElementById("result").innerHTML = `
-    <div class="result-label">System Status</div>
-    <div class="result-class">Model Error</div>
-    <div class="result-score">${error.message}</div>
-  `;
-  console.error(error);
-}
+      } catch (error) {
+        document.getElementById("result").innerHTML = `
+          <div class="result-label">Status Sistem</div>
+          <div class="result-class">Ralat Model</div>
+          <div class="result-score">Sila semak fail model dan laluan folder anda.</div>
+        `;
+      }
     }
 
     loadModel();
@@ -832,9 +831,9 @@
         document.getElementById("emptyPreview").style.display = "none";
 
         document.getElementById("result").innerHTML = `
-          <div class="result-label">Image Loaded</div>
-          <div class="result-class">Ready to Detect</div>
-          <div class="result-score">Click Detect Khat to view result.</div>
+          <div class="result-label">Imej Dimuat Naik</div>
+          <div class="result-class">Sedia untuk Pengesanan</div>
+          <div class="result-score">Klik Kesan Khat untuk melihat keputusan.</div>
         `;
       }
     });
@@ -844,26 +843,26 @@
 
       if (!model) {
         document.getElementById("result").innerHTML = `
-          <div class="result-label">System Status</div>
-          <div class="result-class">Model Not Loaded</div>
-          <div class="result-score">Check model folder and refresh the page.</div>
+          <div class="result-label">Status Sistem</div>
+          <div class="result-class">Model Tidak Dimuatkan</div>
+          <div class="result-score">Semak folder model dan muat semula halaman.</div>
         `;
         return;
       }
 
       if (!img.src) {
         document.getElementById("result").innerHTML = `
-          <div class="result-label">No Image</div>
-          <div class="result-class">Upload Image First</div>
-          <div class="result-score">Choose an image before detection.</div>
+          <div class="result-label">Tiada Imej</div>
+          <div class="result-class">Sila Muat Naik Imej Dahulu</div>
+          <div class="result-score">Pilih imej sebelum menjalankan pengesanan.</div>
         `;
         return;
       }
 
       document.getElementById("result").innerHTML = `
-        <div class="result-label">Prediction Status</div>
-        <div class="result-class status-loading">Detecting...</div>
-        <div class="result-score">AI is analyzing the image.</div>
+        <div class="result-label">Status Ramalan</div>
+        <div class="result-class status-loading">Sedang Mengesan...</div>
+        <div class="result-score">AI sedang menganalisis imej.</div>
       `;
 
       const predictions = await model.predict(img);
@@ -871,9 +870,9 @@
       const top = predictions[0];
 
       document.getElementById("result").innerHTML = `
-        <div class="result-label">Top Prediction</div>
+        <div class="result-label">Ramalan Tertinggi</div>
         <div class="result-class">${top.className}</div>
-        <div class="result-score">Confidence: ${(top.probability * 100).toFixed(2)}%</div>
+        <div class="result-score">Tahap Keyakinan: ${(top.probability * 100).toFixed(2)}%</div>
       `;
     }
   </script>
