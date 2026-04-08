@@ -1,0 +1,880 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Aplikasi IntelKHAT</title>
+
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      --bg: #efefef;
+      --panel: rgba(255,255,255,0.78);
+      --panel-strong: rgba(255,255,255,0.95);
+      --border: rgba(17,17,17,0.08);
+      --text: #111111;
+      --muted: #666666;
+      --soft: #f6f6f6;
+      --shadow: 0 18px 50px rgba(0,0,0,0.08);
+    }
+
+    html, body {
+      min-height: 100%;
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at top left, rgba(0,0,0,0.04), transparent 28%),
+        radial-gradient(circle at bottom right, rgba(0,0,0,0.05), transparent 24%),
+        linear-gradient(135deg, #f8f8f8, #ececec 55%, #e8e8e8);
+      overflow-x: hidden;
+      padding: 28px;
+    }
+
+    .app-shell {
+      max-width: 1320px;
+      margin: 0 auto;
+      min-height: calc(100vh - 56px);
+      border: 1px solid var(--border);
+      border-radius: 34px;
+      background: rgba(255,255,255,0.55);
+      backdrop-filter: blur(18px);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      animation: fadeIn 0.8s ease;
+    }
+
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 18px 24px;
+      border-bottom: 1px solid var(--border);
+      background: rgba(255,255,255,0.65);
+      backdrop-filter: blur(16px);
+      animation: slideDown 0.7s ease;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .logo-box {
+      width: 50px;
+      height: 50px;
+      border-radius: 16px;
+      background: #111111;
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      font-weight: 800;
+      transition: transform 0.3s ease;
+    }
+
+    .logo-box:hover {
+      transform: rotate(-6deg) scale(1.05);
+    }
+
+    .brand-text h1 {
+      font-size: 24px;
+      line-height: 1;
+      font-weight: 800;
+    }
+
+    .brand-text p {
+      margin-top: 4px;
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .topbar-right {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .mini-pill {
+      padding: 10px 14px;
+      border-radius: 999px;
+      background: rgba(17,17,17,0.04);
+      border: 1px solid var(--border);
+      color: #444;
+      font-size: 13px;
+      font-weight: 600;
+      transition: transform 0.25s ease, background 0.25s ease;
+    }
+
+    .mini-pill:hover {
+      transform: translateY(-2px);
+      background: rgba(17,17,17,0.07);
+    }
+
+    .workspace {
+      display: grid;
+      grid-template-columns: 360px 1fr;
+      min-height: 760px;
+    }
+
+    .sidebar {
+      border-right: 1px solid var(--border);
+      background: rgba(250,250,250,0.78);
+      padding: 24px 20px;
+      animation: fadeLeft 0.8s ease;
+    }
+
+    .main-panel {
+      padding: 26px;
+      animation: fadeUp 0.9s ease;
+    }
+
+    .section-title {
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: #7b7b7b;
+      font-weight: 800;
+      margin-bottom: 14px;
+    }
+
+    .project-card,
+    .info-card,
+    .detect-card,
+    .preview-card,
+    .result-card,
+    .steps-card {
+      background: var(--panel-strong);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      box-shadow: 0 12px 30px rgba(0,0,0,0.05);
+      transition: transform 0.28s ease, box-shadow 0.28s ease, background 0.28s ease;
+    }
+
+    .project-card:hover,
+    .info-card:hover,
+    .detect-card:hover,
+    .preview-card:hover,
+    .result-card:hover,
+    .steps-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 18px 34px rgba(0,0,0,0.07);
+    }
+
+    .project-card {
+      padding: 20px;
+      margin-bottom: 16px;
+    }
+
+    .project-card h2 {
+      font-size: 22px;
+      margin-bottom: 8px;
+    }
+
+    .project-card p {
+      color: var(--muted);
+      line-height: 1.65;
+      font-size: 14px;
+    }
+
+    .status-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-top: 18px;
+    }
+
+    .status-box {
+      border-radius: 18px;
+      background: var(--soft);
+      border: 1px solid var(--border);
+      padding: 14px;
+      transition: transform 0.25s ease, background 0.25s ease;
+    }
+
+    .status-box:hover {
+      transform: translateY(-2px);
+      background: #f0f0f0;
+    }
+
+    .status-label {
+      font-size: 12px;
+      color: #7a7a7a;
+      margin-bottom: 6px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+    }
+
+    .status-value {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .info-card {
+      padding: 18px;
+      margin-bottom: 14px;
+    }
+
+    .info-card h3 {
+      font-size: 16px;
+      margin-bottom: 10px;
+    }
+
+    .info-card p,
+    .info-card li {
+      font-size: 14px;
+      line-height: 1.7;
+      color: #555;
+    }
+
+    .khat-list {
+      display: grid;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .khat-item {
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      background: #f8f8f8;
+      padding: 12px 14px;
+      transition: transform 0.25s ease, background 0.25s ease;
+    }
+
+    .khat-item:hover {
+      transform: translateX(4px);
+      background: #f1f1f1;
+    }
+
+    .khat-item strong {
+      display: block;
+      font-size: 14px;
+      margin-bottom: 4px;
+    }
+
+    .main-grid {
+      display: grid;
+      grid-template-columns: 1.12fr 0.88fr;
+      gap: 20px;
+    }
+
+    .detect-card {
+      padding: 22px;
+      margin-bottom: 20px;
+    }
+
+    .panel-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+    .panel-head h2 {
+      font-size: 30px;
+      line-height: 1.1;
+      margin-bottom: 8px;
+    }
+
+    .panel-head p {
+      color: var(--muted);
+      line-height: 1.7;
+      max-width: 640px;
+    }
+
+    .app-badge {
+      white-space: nowrap;
+      padding: 10px 14px;
+      border-radius: 999px;
+      background: #111111;
+      color: white;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      animation: pulseSoft 2s infinite;
+    }
+
+    .upload-zone {
+      border: 2px dashed #cfcfcf;
+      border-radius: 24px;
+      background: linear-gradient(180deg, #fcfcfc, #f3f3f3);
+      padding: 28px;
+      text-align: center;
+      transition: all 0.3s ease;
+    }
+
+    .upload-zone:hover {
+      border-color: #9d9d9d;
+      transform: translateY(-2px);
+      background: linear-gradient(180deg, #ffffff, #f1f1f1);
+    }
+
+    .upload-icon {
+      width: 62px;
+      height: 62px;
+      margin: 0 auto 14px;
+      border-radius: 20px;
+      background: #111111;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 26px;
+      font-weight: 800;
+      transition: transform 0.3s ease;
+    }
+
+    .upload-zone:hover .upload-icon {
+      transform: scale(1.06) rotate(-4deg);
+    }
+
+    .upload-zone h3 {
+      font-size: 22px;
+      margin-bottom: 8px;
+    }
+
+    .upload-zone p {
+      color: var(--muted);
+      font-size: 15px;
+      line-height: 1.65;
+      max-width: 520px;
+      margin: 0 auto;
+    }
+
+    .upload-actions {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 22px;
+    }
+
+    .btn,
+    .btn-secondary {
+      border: none;
+      border-radius: 16px;
+      padding: 15px 22px;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform 0.25s ease, background 0.25s ease, color 0.25s ease, box-shadow 0.25s ease;
+    }
+
+    .btn {
+      background: #111111;
+      color: #ffffff;
+      box-shadow: 0 12px 22px rgba(0,0,0,0.08);
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+      background: #2a2a2a;
+    }
+
+    .btn-secondary {
+      background: #ffffff;
+      color: #111111;
+      border: 1px solid #d7d7d7;
+    }
+
+    .btn-secondary:hover {
+      transform: translateY(-2px);
+      background: #f3f3f3;
+    }
+
+    #upload {
+      display: none;
+    }
+
+    .file-name {
+      margin-top: 16px;
+      font-size: 14px;
+      color: #666666;
+      transition: opacity 0.25s ease;
+    }
+
+    .preview-card,
+    .result-card,
+    .steps-card {
+      padding: 20px;
+    }
+
+    .preview-card h3,
+    .result-card h3,
+    .steps-card h3 {
+      font-size: 18px;
+      margin-bottom: 14px;
+    }
+
+    #preview {
+      display: none;
+      width: 100%;
+      max-height: 360px;
+      object-fit: contain;
+      border-radius: 20px;
+      border: 1px solid #dcdcdc;
+      background: #f8f8f8;
+      padding: 10px;
+      animation: fadeUp 0.4s ease;
+    }
+
+    .empty-preview {
+      min-height: 280px;
+      border-radius: 20px;
+      border: 1px dashed #d6d6d6;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      color: #8a8a8a;
+      background: linear-gradient(180deg, #fbfbfb, #f4f4f4);
+      padding: 24px;
+    }
+
+    .result-box {
+      background: #f5f5f5;
+      border: 1px solid #dfdfdf;
+      border-radius: 20px;
+      padding: 24px;
+      text-align: center;
+      transition: all 0.3s ease;
+    }
+
+    .result-label {
+      font-size: 12px;
+      font-weight: 800;
+      color: #7a7a7a;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 10px;
+    }
+
+    .result-class {
+      font-size: 34px;
+      font-weight: 800;
+      color: var(--text);
+      margin-bottom: 8px;
+    }
+
+    .result-score {
+      font-size: 16px;
+      color: #555555;
+      line-height: 1.6;
+    }
+
+    .steps-list {
+      display: grid;
+      gap: 10px;
+    }
+
+    .step-item {
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+      padding: 14px;
+      border-radius: 16px;
+      background: #f8f8f8;
+      border: 1px solid #e4e4e4;
+      transition: transform 0.25s ease, background 0.25s ease;
+    }
+
+    .step-item:hover {
+      transform: translateX(4px);
+      background: #f2f2f2;
+    }
+
+    .step-no {
+      min-width: 30px;
+      height: 30px;
+      border-radius: 999px;
+      background: #111111;
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      font-weight: 800;
+      margin-top: 2px;
+    }
+
+    .step-text strong {
+      display: block;
+      font-size: 14px;
+      margin-bottom: 2px;
+    }
+
+    .step-text span {
+      font-size: 13px;
+      line-height: 1.6;
+      color: #606060;
+    }
+
+    .status-loading {
+      animation: pulse 1.15s infinite;
+    }
+
+    @keyframes fadeUp {
+      from {
+        opacity: 0;
+        transform: translateY(18px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes fadeLeft {
+      from {
+        opacity: 0;
+        transform: translateX(-20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    @keyframes slideDown {
+      from {
+        opacity: 0;
+        transform: translateY(-15px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes pulse {
+      0% { opacity: 0.55; }
+      50% { opacity: 1; }
+      100% { opacity: 0.55; }
+    }
+
+    @keyframes pulseSoft {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.03); }
+      100% { transform: scale(1); }
+    }
+
+    @media (max-width: 1100px) {
+      .workspace,
+      .main-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .sidebar {
+        border-right: none;
+        border-bottom: 1px solid var(--border);
+      }
+    }
+
+    @media (max-width: 720px) {
+      body {
+        padding: 14px;
+      }
+
+      .topbar {
+        padding: 16px;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 14px;
+      }
+
+      .main-panel,
+      .sidebar {
+        padding: 18px;
+      }
+
+      .panel-head {
+        flex-direction: column;
+      }
+
+      .panel-head h2 {
+        font-size: 24px;
+      }
+
+      .status-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .upload-actions {
+        flex-direction: column;
+      }
+
+      .btn,
+      .btn-secondary,
+      .mini-pill {
+        width: 100%;
+        text-align: center;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <div class="brand">
+        <div class="logo-box">خ</div>
+        <div class="brand-text">
+          <h1>IntelKHAT</h1>
+          <p>Prototaip Inovasi • Pengecaman Khat Berasaskan AI</p>
+        </div>
+      </div>
+
+      <div class="topbar-right">
+        <div class="mini-pill">Aplikasi Inovasi Pelajar</div>
+        <div class="mini-pill">Model Teachable Machine</div>
+        <div class="mini-pill">Pengesanan Secara Langsung</div>
+      </div>
+    </header>
+
+    <div class="workspace">
+      <aside class="sidebar">
+        <div class="section-title">Penerangan Projek</div>
+
+        <div class="project-card">
+          <h2>Prototaip IntelKHAT</h2>
+          <p>
+            Aplikasi inovasi yang membantu pengguna mengenal pasti jenis tulisan khat Arab melalui imej yang dimuat naik
+            dalam ruang kerja yang lebih kemas dan berbentuk aplikasi berbanding paparan laman web biasa.
+          </p>
+
+          <div class="status-grid">
+            <div class="status-box">
+              <div class="status-label">Fokus</div>
+              <div class="status-value">Pengecaman Khat</div>
+            </div>
+            <div class="status-box">
+              <div class="status-label">Mod</div>
+              <div class="status-value">Muat Naik Imej</div>
+            </div>
+            <div class="status-box">
+              <div class="status-label">Model</div>
+              <div class="status-value">Model TM Tempatan</div>
+            </div>
+            <div class="status-box">
+              <div class="status-label">Output</div>
+              <div class="status-value">Ramalan Tertinggi</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="info-card">
+          <h3>Jenis Khat Disokong</h3>
+          <div class="khat-list">
+            <div class="khat-item"><strong>Nasakh</strong><span>Nasakh Mushaf, Nasakh Moden</span></div>
+            <div class="khat-item"><strong>Thuluth</strong><span>Thuluth ‘Adi, Thuluth Jali</span></div>
+            <div class="khat-item"><strong>Diwani</strong><span>Diwani ‘Adi, Diwani Jali</span></div>
+            <div class="khat-item"><strong>Kufi</strong><span>Murabba‘, Muzakhraf, Fatimi</span></div>
+            <div class="khat-item"><strong>Farisi</strong><span>Nasta‘liq, Shikasta</span></div>
+            <div class="khat-item"><strong>Riq‘ah</strong><span>Gaya utama</span></div>
+          </div>
+        </div>
+
+        <div class="info-card">
+          <h3>Tujuan Inovasi</h3>
+          <p>
+            Direka untuk pelajar, pemula dan pendidik yang memerlukan antaramuka mudah bagi menguji pengecaman gaya khat Arab dengan cepat.
+          </p>
+        </div>
+      </aside>
+
+      <main class="main-panel">
+        <div class="detect-card">
+          <div class="panel-head">
+            <div>
+              <h2>Ruang Kerja Pengesanan Khat AI</h2>
+              <p>
+                Muat naik satu imej khat, jalankan model, dan lihat ramalan jenis khat yang paling berkemungkinan bersama skor keyakinan.
+              </p>
+            </div>
+            <div class="app-badge">MOD APLIKASI</div>
+          </div>
+
+          <div class="upload-zone">
+            <div class="upload-icon">↑</div>
+            <h3>Muat Naik Imej Khat</h3>
+            <p>
+              Pilih satu fail imej daripada peranti anda. Sistem akan memaparkan pratonton imej sebelum menjalankan pengesanan AI.
+            </p>
+
+            <div class="upload-actions">
+              <label for="upload" class="btn">Pilih Imej</label>
+              <button class="btn-secondary" onclick="predict()">Kesan Khat</button>
+            </div>
+
+            <input type="file" id="upload" accept="image/*">
+            <div class="file-name" id="fileName">Tiada fail dipilih</div>
+          </div>
+        </div>
+
+        <div class="main-grid">
+          <div>
+            <div class="preview-card">
+              <h3>Pratonton Imej</h3>
+              <div class="empty-preview" id="emptyPreview">Pratonton imej yang dimuat naik akan dipaparkan di sini.</div>
+              <img id="preview" alt="Pratonton Imej">
+            </div>
+          </div>
+
+          <div>
+            <div class="result-card" style="margin-bottom: 20px;">
+              <h3>Keputusan Pengesanan</h3>
+              <div class="result-box" id="result">
+                <div class="result-label">Status Sistem</div>
+                <div class="result-class">Menunggu Imej</div>
+                <div class="result-score">Muat naik imej dan klik butang Kesan Khat.</div>
+              </div>
+            </div>
+
+            <div class="steps-card">
+              <h3>Cara Sistem Berfungsi</h3>
+              <div class="steps-list">
+                <div class="step-item">
+                  <div class="step-no">1</div>
+                  <div class="step-text">
+                    <strong>Pilih imej</strong>
+                    <span>Pilih satu imej kaligrafi Arab daripada peranti anda.</span>
+                  </div>
+                </div>
+                <div class="step-item">
+                  <div class="step-no">2</div>
+                  <div class="step-text">
+                    <strong>Pratonton fail</strong>
+                    <span>Sistem memaparkan imej yang dimuat naik sebelum ramalan dibuat.</span>
+                  </div>
+                </div>
+                <div class="step-item">
+                  <div class="step-no">3</div>
+                  <div class="step-text">
+                    <strong>Jalankan model</strong>
+                    <span>Teachable Machine menganalisis imej secara tempatan.</span>
+                  </div>
+                </div>
+                <div class="step-item">
+                  <div class="step-no">4</div>
+                  <div class="step-text">
+                    <strong>Lihat keputusan</strong>
+                    <span>Lihat jenis khat yang diramal dan skor keyakinannya.</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <script>
+    const MODEL_URL = "https://mardan1977.github.io/IntelKHAT-website/";
+    let model;
+
+    async function loadModel() {
+      try {
+        model = await tmImage.load(
+          MODEL_URL + "model.json",
+          MODEL_URL + "metadata.json"
+        );
+
+        document.getElementById("result").innerHTML = `
+          <div class="result-label">Status Sistem</div>
+          <div class="result-class">Model Sedia Digunakan</div>
+          <div class="result-score">Muat naik imej untuk memulakan pengesanan.</div>
+        `;
+      } catch (error) {
+        document.getElementById("result").innerHTML = `
+          <div class="result-label">Status Sistem</div>
+          <div class="result-class">Ralat Model</div>
+          <div class="result-score">Sila semak fail model dan laluan folder anda.</div>
+        `;
+      }
+    }
+
+    loadModel();
+
+    document.getElementById("upload").addEventListener("change", function(e) {
+      const file = e.target.files[0];
+      if (file) {
+        document.getElementById("fileName").textContent = file.name;
+
+        const img = document.getElementById("preview");
+        img.src = window.URL.createObjectURL(file);
+        img.style.display = "block";
+        document.getElementById("emptyPreview").style.display = "none";
+
+        document.getElementById("result").innerHTML = `
+          <div class="result-label">Imej Dimuat Naik</div>
+          <div class="result-class">Sedia untuk Pengesanan</div>
+          <div class="result-score">Klik Kesan Khat untuk melihat keputusan.</div>
+        `;
+      }
+    });
+
+    async function predict() {
+      const img = document.getElementById("preview");
+
+      if (!model) {
+        document.getElementById("result").innerHTML = `
+          <div class="result-label">Status Sistem</div>
+          <div class="result-class">Model Tidak Dimuatkan</div>
+          <div class="result-score">Semak folder model dan muat semula halaman.</div>
+        `;
+        return;
+      }
+
+      if (!img.src) {
+        document.getElementById("result").innerHTML = `
+          <div class="result-label">Tiada Imej</div>
+          <div class="result-class">Sila Muat Naik Imej Dahulu</div>
+          <div class="result-score">Pilih imej sebelum menjalankan pengesanan.</div>
+        `;
+        return;
+      }
+
+      document.getElementById("result").innerHTML = `
+        <div class="result-label">Status Ramalan</div>
+        <div class="result-class status-loading">Sedang Mengesan...</div>
+        <div class="result-score">AI sedang menganalisis imej.</div>
+      `;
+
+      const predictions = await model.predict(img);
+      predictions.sort((a, b) => b.probability - a.probability);
+      const top = predictions[0];
+
+      document.getElementById("result").innerHTML = `
+        <div class="result-label">Ramalan Tertinggi</div>
+        <div class="result-class">${top.className}</div>
+        <div class="result-score">Tahap Keyakinan: ${(top.probability * 100).toFixed(2)}%</div>
+      `;
+    }
+  </script>
+</body>
+</html>
